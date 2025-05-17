@@ -1,1 +1,1 @@
-# SneakySaver
+SneakySaver is a platform where you can track your expenses and get the overview of you expenses.
