@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Graphs - SneakySaver</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
+      color: #111;
+    }
+    header {
+      background-color: #6b21a8;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .back-button {
+      background-color: #3b82f6;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .dashboard {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .graph-box {
+      background-color: #f3f4f6;
+      border: 2px solid #6b21a8;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    canvas {
+      width: 100% !important;
+      max-height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SneakySaver - Graphs</div>
+    <button class="back-button" onclick="goBack()">Back to Tracker</button>
+  </header>
+
+  <main class="dashboard">
+    <div class="graph-box">
+      <h3>Pie Chart - Expenses by Category</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+    <div class="graph-box">
+      <h3>Line Chart - Daily Income vs Expenses</h3>
+      <canvas id="lineChart"></canvas>
+    </div>
+    <div class="graph-box">
+      <h3>Bar Chart - Total by Category</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+    <div class="graph-box">
+      <h3>Area Chart - Cumulative Expenses</h3>
+      <canvas id="areaChart"></canvas>
+    </div>
+  </main>
+
+  <script>
+    async function fetchEntries() {
+      const email = sessionStorage.getItem("email"); // Or however you're storing the user's email
+      if (!email) {
+        alert("No user email found. Please log in or set your email.");
+        return [];
+      }
+  
+      try {
+        const response = await fetch(`/get-expenses?email=${email}`);
+        const data = await response.json();
+        if (data.success) {
+          return data.expenses;
+        } else {
+          alert("Failed to fetch data from server.");
+          return [];
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Server error occurred while fetching data.");
+        return [];
+      }
+    }
+  
+    function goBack() {
+      window.location.href = "expense.html";
+    }
+  
+    async function renderCharts() {
+      const entries = await fetchEntries();
+      if (entries.length === 0) {
+        alert("No data available. Please add income or expense entries.");
+        return;
+      }
+  
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      const ctxLine = document.getElementById('lineChart').getContext('2d');
+      const ctxBar = document.getElementById('barChart').getContext('2d');
+      const ctxArea = document.getElementById('areaChart').getContext('2d');
+  
+      const categoryTotals = {};
+      const expenseByDay = Array(7).fill(0);
+      const incomeByDay = Array(7).fill(0);
+      const cumulativeExpenses = [];
+      let cumulative = 0;
+  
+      entries.forEach((e, i) => {
+        const amount = Number(e.amount);
+        const dateObj = new Date(e.date);
+        const dayIndex = dateObj.getDay(); // Sunday = 0, Monday = 1, etc.
+  
+        if (e.type === 'expense') {
+          expenseByDay[dayIndex] += amount;
+          cumulative += amount;
+          categoryTotals[e.category] = (categoryTotals[e.category] || 0) + amount;
+        } else if (e.type === 'income') {
+          incomeByDay[dayIndex] += amount;
+        }
+  
+        cumulativeExpenses.push(cumulative);
+      });
+  
+      new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(categoryTotals),
+          datasets: [{
+            data: Object.values(categoryTotals),
+            backgroundColor: ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#e879f9']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+  
+      new Chart(ctxLine, {
+        type: 'line',
+        data: {
+          labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          datasets: [
+            {
+              label: 'Income',
+              data: incomeByDay,
+              borderColor: '#10b981',
+              backgroundColor: '#10b981',
+              fill: false
+            },
+            {
+              label: 'Expenses',
+              data: expenseByDay,
+              borderColor: '#ef4444',
+              backgroundColor: '#ef4444',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+  
+      new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(categoryTotals),
+          datasets: [{
+            label: 'Amount by Category',
+            data: Object.values(categoryTotals),
+            backgroundColor: '#6b21a8'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+  
+      new Chart(ctxArea, {
+        type: 'line',
+        data: {
+          labels: cumulativeExpenses.map((_, i) => `Entry ${i + 1}`),
+          datasets: [{
+            label: 'Cumulative Expense',
+            data: cumulativeExpenses,
+            backgroundColor: 'rgba(239,68,68,0.2)',
+            borderColor: '#ef4444',
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+  
+    // Run the chart render function after the page loads
+    renderCharts();
+  </script>
+  
+</body>
+</html>

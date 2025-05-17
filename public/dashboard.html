@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - SneakySaver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+      color: black;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background-color: #6b21a8;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .logout-button {
+      background-color: #f87171;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background-color: #ef4444;
+    }
+
+    .welcome {
+      text-align: center;
+      margin: 2rem 0 1rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .quote {
+      text-align: center;
+      margin-top: -0.5rem;
+      font-style: italic;
+      color: #5b21b6;
+    }
+
+    .progress-container {
+      width: 80%;
+      margin: 1.5rem auto;
+      background-color: #e9d5ff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .progress-bar {
+      height: 20px;
+      width: 60%;
+      background-color: #8b5cf6;
+      transition: width 0.5s ease-in-out;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card {
+      background-color: white;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+      border: 2px solid #6b21a8;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(107, 33, 168, 0.4);
+    }
+
+    .card i {
+      font-size: 2.5rem;
+      margin-bottom: 0.7rem;
+      color: #6b21a8;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #f3e8ff;
+      font-size: 0.9rem;
+      color: #555;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">SneakySaver</div>
+    <div class="profile">
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="welcome" id="welcomeText">Welcome, user!</div>
+  <div class="quote">"Save money and money will save you." 💡</div>
+
+  <div class="card-grid">
+    <div class="card" onclick="goTo('expense.html')">
+      <i class="fas fa-book"></i>
+      My Spending Tracker
+    </div>
+    <div class="card" onclick="goTo('recurringBills.html')">
+      <i class="fas fa-money-bill-wave"></i>
+      Bills
+    </div>
+    <div class="card" onclick="goTo('graphs.html')">
+      <i class="fas fa-chart-line"></i>
+      Spending Insights
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 SneakySaver. All rights reserved.
+  </footer>
+
+  <script>
+    // Display user email
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("loggedInEmail");
+      const welcomeText = document.getElementById("welcomeText");
+      welcomeText.textContent = email ? `Welcome, ${email}!` : "Welcome, user!";
+
+      // Simulate savings progress (you can make this dynamic later)
+      const progress = 60; // In percent
+      document.getElementById("progressBar").style.width = progress + "%";
+    });
+
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    function logout() {
+      alert("Logged out successfully!");
+      localStorage.removeItem("loggedInEmail");
+      window.location.href = "homepage.html";
+    }
+  </script>
+
+</body>
+</html>

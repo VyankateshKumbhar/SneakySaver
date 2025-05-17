@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SneakySaver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f7f5fb;
+      color: #2e2e38;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background-color: #6b21a8;
+      border-bottom: 1px solid #d1cfe5;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    nav a {
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #ffffff;
+      border: 1px solid #ffffff;
+      transition: all 0.3s;
+    }
+
+    nav a.primary {
+      background-color: #c084fc;
+      color: #2e1065;
+      border: none;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      background-color: #7e22ce;
+      color: #ffffff;
+    }
+
+    nav a.primary:hover {
+      background-color: white;
+      color: #2e1065;
+      border: 1px solid #2e1065;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(to bottom right, #f7f0ff, #e9d8fd);
+    }
+
+    @media(min-width: 768px) {
+      main {
+        flex-direction: row;
+        justify-content: space-around;
+        text-align: left;
+      }
+    }
+
+    .hero-text {
+      max-width: 600px;
+    }
+
+    .hero-text h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      color: #2e1065;
+    }
+
+    .highlight {
+      color: #9333ea;
+    }
+
+    .hero-text p {
+      font-size: 1.125rem;
+      color: #4b5563;
+      margin-bottom: 2rem;
+    }
+
+    .cta-button {
+      background-color: #9333ea;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .cta-button:hover {
+      background-color: #7e22ce;
+    }
+
+    .illustration {
+      margin-top: 3rem;
+      max-width: 400px;
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @media(min-width: 768px) {
+      .illustration {
+        margin-top: 0;
+      }
+    }
+
+    /* Fade-in animations */
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1.2s ease-in forwards;
+    }
+
+    .fade-in-delay {
+      opacity: 0;
+      animation: fadeIn 1.6s ease-in forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Features Section */
+    .features {
+      padding: 3rem 2rem;
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    .features h2 {
+      color: #4c1d95;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .features-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .feature {
+      background: #f3e8ff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .feature h3 {
+      color: #6b21a8;
+    }
+
+    footer {
+      background-color: #6b21a8;
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    footer a {
+      color: #ddd6fe;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">SneakySaver</div>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="signup.html" class="primary">Sign Up</a>
+      <a href="#about">About Us</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero-text fade-in">
+      <h1>Track Everything You Spend.<br><span class="highlight">Save Smarter</span> with SneakySaver</h1>
+      <p>From EMIs to coffee bills — log it all with ease. Visualize your spending habits and get sneakily good at saving.</p>
+      <a href="signup.html" class="cta-button">Get Started</a>
+    </div>
+    <div class="fade-in-delay">
+      <img src="https://media.istockphoto.com/id/1342223620/photo/unrecognizable-afro-american-businessman-checking-family-expenses-using-digital-tablet.jpg?s=612x612&w=0&k=20&c=Etp5M7r8I-ZSEghJlvA7jY5mXSxYUPcBYpwmQ-n4rgo=" alt="Finance Illustration" class="illustration" />
+    </div>
+  </main>
+
+  <section class="features" id="about">
+    <h2>Why SneakySaver?</h2>
+    <div class="features-container">
+      <div class="feature">
+        <h3>Auto Categorization</h3>
+        <p>Smartly categorizes your expenses so you don’t have to.</p>
+      </div>
+      <div class="feature" style="background: #ede9fe;">
+        <h3>Monthly Insights</h3>
+        <p>See detailed spending summaries and trend forecasts.</p>
+      </div>
+      <div class="feature" style="background: #e9d5ff;">
+        <h3>Bill Management</h3>
+<p>Store all your bills as Upcoming, Missed, or Paid — and easily update their status anytime.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 SneakySaver. All rights reserved.</p>
+    <p><a href="#about">About Us</a></p>
+  </footer>
+
+</body>
+</html>

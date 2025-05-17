@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Spending Tracker - SneakySaver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
+      color: #111;
+    }
+    header {
+      background-color: #6b21a8;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .logout-button {
+      background-color: #f87171;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: white;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    .box {
+      background-color: #f3f4f6;
+      border: 2px solid #6b21a8;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    .input-section label,
+    .input-section input,
+    .input-section select,
+    .input-section textarea,
+    .input-section button {
+      display: block;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .input-section input,
+    .input-section select,
+    .input-section textarea {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .input-section button {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background-color: #9333ea;
+      color: white;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .download-button {
+      margin-top: 1rem;
+      background-color: #3b82f6;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .view-graph-button {
+      margin-top: 1rem;
+      background-color: #10b981;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .entry-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .entry-table th, .entry-table td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .entry-table th {
+      background-color: #ddd;
+    }
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+    <header>
+        <div class="logo">SneakySaver</div>
+        <button class="logout-button" onclick="logout()">Logout</button>
+      </header>
+      <main class="dashboard">
+        <div class="box input-section">
+          <h3>Add Expense / Income</h3>
+          <label for="type">Type</label>
+          <select id="type">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="">-- Select Category (for Expenses only) --</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills">Bills</option>
+            <option value="EMI">EMI</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" placeholder="Enter amount" required>
+          <label for="date">Date</label>
+          <input type="date" id="date" required>
+          <label for="comment">Comment</label>
+          <textarea id="comment" placeholder="Add an optional comment"></textarea>
+          <button onclick="addEntry()">Add Entry</button>
+          <button class="download-button" onclick="downloadPDF()">Download Report PDF</button>
+          <button class="view-graph-button" onclick="goToGraphPage()">View Graphs</button>
+        </div>
+      
+        <div class="box">
+          <h3>All Expense Records (Last 10)</h3>
+          <table class="entry-table" id="entryTable">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+      
+      <script>
+        const entryTableBody = document.querySelector("#entryTable tbody");
+        let entries = [];
+      
+        async function addEntry() {
+          const email = sessionStorage.getItem("email");
+          if (!email) {
+            alert("You are not logged in.");
+            window.location.href = "login.html";
+            return;
+          }
+      
+          const type = document.getElementById("type").value;
+          const category = document.getElementById("category").value;
+          const amount = document.getElementById("amount").value;
+          const date = document.getElementById("date").value;
+          const comment = document.getElementById("comment").value;
+      
+          if (!amount || !date || (type === 'expense' && !category)) {
+            alert("Please fill in all required fields.");
+            return;
+          }
+      
+          const entry = { email, type, category, amount, date, comment };
+      
+          try {
+            const res = await fetch("/add-expense", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(entry),
+            });
+            const data = await res.json();
+            if (data.success) {
+              alert("Entry saved!");
+              loadEntries();
+            } else {
+              alert("Failed to save entry.");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Error while saving.");
+          }
+        }
+      
+        async function loadEntries() {
+          const email = sessionStorage.getItem("email");
+          if (!email) return;
+      
+          try {
+            const res = await fetch(`/get-expenses?email=${email}`);
+            const data = await res.json();
+            entries = data.expenses || [];
+            renderTable();
+          } catch (err) {
+            console.error("Error loading entries:", err);
+          }
+        }
+      
+        function renderTable() {
+          entryTableBody.innerHTML = '';
+          const last10 = entries.slice(-10);
+          last10.forEach((entry, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${entries.length - last10.length + index + 1}</td>
+              <td>${entry.type}</td>
+              <td>${entry.type === 'income' ? '—' : entry.category}</td>
+              <td>₹${entry.amount}</td>
+              <td>${entry.date}</td>
+            `;
+            entryTableBody.appendChild(row);
+          });
+        }
+      
+        function downloadPDF() {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.setFont("times", "normal");
+      
+          let totalIncome = 0, totalExpense = 0;
+          const categoryTotals = {};
+          entries.forEach(e => {
+            if (e.type === 'income') totalIncome += Number(e.amount);
+            else {
+              totalExpense += Number(e.amount);
+              categoryTotals[e.category] = (categoryTotals[e.category] || 0) + Number(e.amount);
+            }
+          });
+          const savings = totalIncome - totalExpense;
+      
+          let y = 10;
+          doc.setFontSize(16);
+          doc.text("SneakySaver Financial Report", 10, y);
+          y += 10;
+          doc.setFontSize(12);
+          doc.text(`Total Income: ₹${totalIncome}`, 10, y); y += 10;
+          doc.text(`Total Expenses: ₹${totalExpense}`, 10, y); y += 10;
+          doc.text(`Savings: ₹${savings}`, 10, y); y += 15;
+      
+          doc.text("Expenses by Category:", 10, y); y += 10;
+          Object.entries(categoryTotals).forEach(([cat, amt]) => {
+            doc.text(`${cat}: ₹${amt}`, 10, y);
+            y += 10;
+          });
+      
+          y += 10;
+          doc.text("Detailed Entries:", 10, y); y += 10;
+      
+          entries.forEach((e, i) => {
+            const line = `${i + 1}. ${e.type.toUpperCase()} - ${e.type === 'income' ? '—' : e.category} - ₹${e.amount} on ${e.date}${e.comment ? ' | Comment: ' + e.comment : ''}`;
+            doc.text(line, 10, y);
+            y += 10;
+            if (y > 270) {
+              doc.addPage();
+              y = 10;
+            }
+          });
+      
+          doc.save("SneakySaver_Report.pdf");
+        }
+      
+        function logout() {
+          alert("Logged out successfully!");
+          sessionStorage.clear();
+          window.location.href = "homepage.html";
+        }
+      
+        function goToGraphPage() {
+          window.location.href = "graphs.html";
+        }
+      
+        loadEntries(); // Initial call
+      </script>
+</body>
+</html>
